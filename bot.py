@@ -156,13 +156,16 @@ async def main():
 
     logger.info(f"Webhook URL: {WEBHOOK_URL}")
 
-    await app.run_webhook(
-        listen="0.0.0.0",
-        port=PORT,
-        webhook_url=WEBHOOK_URL,
-        startup=on_startup,
-        shutdown=on_shutdown,
-    )
+    # Вручной вызов старта и остановки
+    await on_startup(app)
+    try:
+        await app.run_webhook(
+            listen="0.0.0.0",
+            port=PORT,
+            webhook_url=WEBHOOK_URL,
+        )
+    finally:
+        await on_shutdown(app)
 
 if __name__ == "__main__":
     asyncio.run(main())
