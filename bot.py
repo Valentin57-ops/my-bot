@@ -149,15 +149,14 @@ async def on_shutdown(application: Application):
     await application.bot.delete_webhook()
     logger.info("Webhook deleted")
 
-async def main():
+async def run_bot():
     app = Application.builder().token(TELEGRAM_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_button))
 
     logger.info(f"Webhook URL: {WEBHOOK_URL}")
-
-    # Вручной вызов старта и остановки
     await on_startup(app)
+
     try:
         await app.run_webhook(
             listen="0.0.0.0",
@@ -168,4 +167,7 @@ async def main():
         await on_shutdown(app)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.get_event_loop().run_until_complete(run_bot())
+    except RuntimeError as e:
+        logger.error(f"RuntimeError: {e}")
