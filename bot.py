@@ -154,19 +154,15 @@ async def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_button))
 
-    await on_startup(app)
+    logger.info(f"Webhook URL: {WEBHOOK_URL}")
 
-    await app.start_webhook(
+    await app.run_webhook(
         listen="0.0.0.0",
         port=PORT,
         webhook_url=WEBHOOK_URL,
+        startup_callback=on_startup,
+        shutdown_callback=on_shutdown,
     )
-    logger.info("Webhook server started")
-
-    try:
-        await app.updater.idle()
-    finally:
-        await on_shutdown(app)
 
 if __name__ == "__main__":
     asyncio.run(main())
