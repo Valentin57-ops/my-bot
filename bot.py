@@ -74,7 +74,7 @@ def format_vacancy(vac):
         f"📍 Город: {area}\n"
         f"🕒 Формат работы: {schedule}\n"
         f"✍️ Описание:\n{desc}\n"
-        f"🔗 [Подробнее]({vac.get('alternate_url', '#')})"
+        f"🔗 [Подробнее]({vac.get('alternate_url', '#' )})"
     )
 
 async def send_message_with_retry(context, chat_id, message):
@@ -160,8 +160,8 @@ async def main():
         listen="0.0.0.0",
         port=PORT,
         webhook_url=WEBHOOK_URL,
-        startup_callback=on_startup,
-        shutdown_callback=on_shutdown,
+        startup=on_startup,
+        shutdown=on_shutdown,
     )
 
 if __name__ == "__main__":
