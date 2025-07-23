@@ -95,22 +95,14 @@ def format_vacancy(vacancy):
     description = snippet.get('responsibility', 'Описание отсутствует.')
     description = clean_text(description)
 
-    return (
-        f"🔹 *{name}*
-"
-        f"💼 Компания: {employer}
-"
-        f"💰 Зарплата: от {salary_from} до {salary_to} руб.
-"
-        f"📍 Город: {area}
-"
-        f"🕒 Формат работы: {schedule}
-"
-        f"✍️ Описание:
+    return f"""🔹 *{name}*
+💼 Компания: {employer}
+💰 Зарплата: от {salary_from} до {salary_to} руб.
+📍 Город: {area}
+🕒 Формат работы: {schedule}
+✍️ Описание:
 {description}
-"
-        f"🔗 [Подробнее]({vacancy.get('alternate_url', '#')})"
-    )
+🔗 [Подробнее]({vacancy.get('alternate_url', '#')})"""
 
 
 async def send_message_with_retry(context, chat_id, message):
