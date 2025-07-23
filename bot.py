@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-WEBHOOK_URL = os.getenv("WEBHOOK_URL")  # Например https://your-app.onrender.com/webhook
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")  # Например: https://your-app.onrender.com/webhook
 PORT = int(os.getenv("PORT", 8443))
 
 HH_API_URL = "https://api.hh.ru/vacancies"
@@ -145,29 +145,23 @@ async def on_startup(application: Application):
     await application.bot.set_webhook(WEBHOOK_URL)
     logger.info(f"Webhook set: {WEBHOOK_URL}")
 
-async def on_shutdown(application: Application):
-    await application.bot.delete_webhook()
-    logger.info("Webhook deleted")
-
 async def run_bot():
     app = Application.builder().token(TELEGRAM_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_button))
 
     logger.info(f"Webhook URL: {WEBHOOK_URL}")
-    await on_startup(app)
 
-    try:
-        await app.run_webhook(
-            listen="0.0.0.0",
-            port=PORT,
-            webhook_url=WEBHOOK_URL,
-        )
-    finally:
-        await on_shutdown(app)
+    await app.initialize()
+    await on_startup(app)
+    await app.start()
+    await app.updater.start_webhook(
+        listen="0.0.0.0",
+        port=PORT,
+        webhook_url=WEBHOOK_URL
+    )
+
+    await asyncio.Event().wait()  # Не завершать приложение
 
 if __name__ == "__main__":
-    try:
-        asyncio.get_event_loop().run_until_complete(run_bot())
-    except RuntimeError as e:
-        logger.error(f"RuntimeError: {e}")
+    asyncio.run(run_bot())
